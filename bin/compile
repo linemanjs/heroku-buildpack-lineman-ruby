@@ -11,3 +11,22 @@ if pack = LanguagePack.detect(ARGV[0], ARGV[1])
     pack.compile
   end
 end
+
+#Lineman stuff
+require 'json'
+
+class BuildLinemanApps
+  include LanguagePack::ShellHelpers
+
+  def build
+    if File.exist?('lineman.json')
+      puts "Reading lineman.json configuration"
+      config = JSON.parse(File.read('lineman.json'))
+      puts "Config is: #{config}"
+    else
+      puts "no lineman.json configuration found"
+    end
+  end
+end
+
+BuildLinemanApps.new.build
