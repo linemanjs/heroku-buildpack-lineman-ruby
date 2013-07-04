@@ -12,6 +12,9 @@ if pack = LanguagePack.detect(ARGV[0], ARGV[1])
   end
 end
 
+BUILD_DIR = ARGV[0]
+CACHE_DIR = ARGV[1]
+
 #Lineman stuff
 require 'json'
 
@@ -31,16 +34,14 @@ class BuildLinemanApps
       npm_curl = "curl http://heroku-buildpack-nodejs.s3.amazonaws.com/npm-1.2.30.tgz -s -o - | tar xzf -"
       puts npm_curl
       run(npm_curl)
-      puts "install lineman"
-      lineman_install = "cd /frontend && /app/bin/node /app/bin/npm-cli.js install"
-      puts lineman_install
-      run(lineman_install)
-      lineman_build = "cd /frontend && lineman clean && lineman build"
-      puts lineman_build
-      run(lineman_build)
+      p run(run_npm("--version"))
     else
       puts "no lineman.json configuration found"
     end
+  end
+
+  def run_npm command
+    "bin/node bin/npm-cli.js #{command}"
   end
 end
 
