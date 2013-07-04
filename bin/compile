@@ -23,6 +23,10 @@ class BuildLinemanApps
       puts "Reading lineman.json configuration"
       config = JSON.parse(File.read('lineman.json'))
       puts "Config is: #{config}"
+      puts "Installing Node"
+      curl = "curl http://heroku-buildpack-nodejs.s3.amazonaws.com/nodejs-0.10.12.tgz -s -o - | tar xzf -"
+      puts curl
+      run(curl)
     else
       puts "no lineman.json configuration found"
     end
