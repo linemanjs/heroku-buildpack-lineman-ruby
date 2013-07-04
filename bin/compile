@@ -34,7 +34,7 @@ class BuildLinemanApps
       npm_curl = "curl http://heroku-buildpack-nodejs.s3.amazonaws.com/npm-1.2.30.tgz -s -o - | tar xzf -"
       puts npm_curl
       run(npm_curl)
-      p run(run_npm("--version"))
+      run_npm("--version")
       build_linemen(config)
     else
       puts "no lineman.json configuration found"
@@ -42,22 +42,24 @@ class BuildLinemanApps
   end
 
   def run_npm command, home = BUILD_DIR
-    "HOME=#{home} #{BUILD_DIR}/bin/node #{BUILD_DIR}/bin/npm-cli.js #{command}"
+    cmd = "HOME=#{home} #{BUILD_DIR}/bin/node #{BUILD_DIR}/bin/npm-cli.js #{command}"
+    p cmd
+    run cmd
   end
 
   def lineman_path(location)
     "#{BUILD_DIR}/#{location}"
   end
 
-  def build_linmen(config)
-    config.fetch("linemenApps").each do |app|
+  def build_linemen(config)
+    config.fetch("linemanApps").each do |app|
       build_lineman app.fetch("location")
     end
   end
 
   def build_lineman(location)
-    run_npm "install", lineman_path(location)
-    run_npm "build", lineman_path(location)
+    run_npm("install --production", lineman_path(location))
+    run_npm("rebuild", lineman_path(location))
   end
 end
 
