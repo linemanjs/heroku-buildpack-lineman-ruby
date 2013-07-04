@@ -35,6 +35,7 @@ class BuildLinemanApps
       puts npm_curl
       run(npm_curl)
       p run(run_npm("--version"))
+      build_linemen(config)
     else
       puts "no lineman.json configuration found"
     end
@@ -42,6 +43,21 @@ class BuildLinemanApps
 
   def run_npm command, home = BUILD_DIR
     "HOME=#{home} #{BUILD_DIR}/bin/node #{BUILD_DIR}/bin/npm-cli.js #{command}"
+  end
+
+  def lineman_path(location)
+    "#{BUILD_DIR}/#{location}"
+  end
+
+  def build_linmen(config)
+    config.fetch("linemenApps").each do |app|
+      build_lineman app.fetch("location")
+    end
+  end
+
+  def build_lineman(location)
+    run_npm "install", lineman_path(location)
+    run_npm "build", lineman_path(location)
   end
 end
 
