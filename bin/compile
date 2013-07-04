@@ -20,6 +20,7 @@ class BuildLinemanApps
 
   def build
     if File.exist?('lineman.json')
+      p ARGV
       puts "Reading lineman.json configuration"
       config = JSON.parse(File.read('lineman.json'))
       puts "Config is: #{config}"
@@ -27,6 +28,16 @@ class BuildLinemanApps
       curl = "curl http://heroku-buildpack-nodejs.s3.amazonaws.com/nodejs-0.10.12.tgz -s -o - | tar xzf -"
       puts curl
       run(curl)
+      npm_curl = "curl http://heroku-buildpack-nodejs.s3.amazonaws.com/npm-1.2.30.tgz -s -o - | tar xzf -"
+      puts npm_curl
+      run(npm_curl)
+      puts "install lineman"
+      lineman_install = "cd /frontend && /app/bin/node /app/bin/npm-cli.js install"
+      puts lineman_install
+      # run(lineman_install)
+      lineman_build = "cd /frontend && lineman clean && lineman build"
+      puts lineman_build
+      run(lineman_build)
     else
       puts "no lineman.json configuration found"
     end
