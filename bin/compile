@@ -40,8 +40,8 @@ class BuildLinemanApps
     end
   end
 
-  def run_npm command
-    "bin/node bin/npm-cli.js #{command}"
+  def run_npm command, home = BUILD_DIR
+    "HOME=#{home} #{BUILD_DIR}/bin/node #{BUILD_DIR}/bin/npm-cli.js #{command}"
   end
 end
 
