@@ -34,7 +34,7 @@ class BuildLinemanApps
       puts "install lineman"
       lineman_install = "cd /frontend && /app/bin/node /app/bin/npm-cli.js install"
       puts lineman_install
-      # run(lineman_install)
+      run(lineman_install)
       lineman_build = "cd /frontend && lineman clean && lineman build"
       puts lineman_build
       run(lineman_build)
