@@ -28,9 +28,9 @@ class BuildLinemanApps
       config = JSON.parse(File.read('lineman.json'))
       puts "Config is: #{config}"
       puts "Installing Node"
-      curl = "curl http://heroku-buildpack-nodejs.s3.amazonaws.com/nodejs-0.10.12.tgz -s -o - | tar xzf -"
-      puts curl
-      run(curl)
+      node_curl = "curl http://heroku-buildpack-nodejs.s3.amazonaws.com/nodejs-0.10.12.tgz -s -o - | tar xzf -"
+      puts node_curl
+      run(node_curl)
       npm_curl = "curl http://heroku-buildpack-nodejs.s3.amazonaws.com/npm-1.2.30.tgz -s -o - | tar xzf -"
       puts npm_curl
       run(npm_curl)
@@ -58,8 +58,10 @@ class BuildLinemanApps
   end
 
   def build_lineman(location)
-    run_npm("install --production", lineman_path(location))
-    run_npm("rebuild", lineman_path(location))
+    Dir.chdir(lineman_path(location)) do
+      run_npm("install --production")
+      run_npm("rebuild")
+    end
   end
 end
 
