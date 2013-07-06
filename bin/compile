@@ -13,6 +13,7 @@ if pack = LanguagePack.detect(ARGV[0], ARGV[1])
 end
 
 BUILD_DIR = ARGV[0]
+NODE_PATH = "#{BUILD_DIR}/bin/node"
 CACHE_DIR = ARGV[1]
 
 #Lineman stuff
@@ -42,13 +43,13 @@ class BuildLinemanApps
   end
 
   def run_npm command, home = BUILD_DIR
-    cmd = "HOME=#{home} #{BUILD_DIR}/bin/node #{BUILD_DIR}/bin/npm-cli.js #{command}"
-    p cmd
+    cmd = "HOME=#{home} #{NODE_PATH} #{BUILD_DIR}/bin/npm-cli.js #{command}"
+    puts cmd
     puts run cmd
   end
 
   def run_lineman(command, path)
-    puts run("#{path}/node_modules/.bin/lineman #{command}")
+    puts run("#{NODE_PATH} #{path}/node_modules/.bin/lineman #{command}")
   end
 
   def lineman_path(location)
@@ -64,7 +65,6 @@ class BuildLinemanApps
   def build_lineman(location)
     path = lineman_path(location)
     raise "No Lineman App at #{location}" unless Dir.exist? path
-    puts path
     Dir.chdir(path) do
       run_npm("install --production")
       run_npm("rebuild")
