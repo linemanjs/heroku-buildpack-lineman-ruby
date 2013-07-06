@@ -59,9 +59,11 @@ class BuildLinemanApps
   def linemen(config)
     config.fetch("linemanApps").each do |app|
       build_lineman app.fetch("location")
+      link_assets app.fetch("installToPath")
     end
   end
 
+  #TODO cache npm installs for faster installs
   def build_lineman(location)
     path = lineman_path(location)
     raise "No Lineman App at #{location}" unless Dir.exist? path
@@ -70,6 +72,11 @@ class BuildLinemanApps
       run_npm("rebuild")
       run_lineman("build", path)
     end
+  end
+
+  def link_assets destination
+    raise "Asset destination expected but missing at #{destination}" unless Dir.exist? destination
+    puts run("ln -fs #{destination}/js/app.min.js /app/frontend/dist/js/app.min.js")
   end
 end
 
