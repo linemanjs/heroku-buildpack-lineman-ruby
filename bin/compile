@@ -64,6 +64,7 @@ class BuildLinemanApps
   def build_lineman(location)
     path = lineman_path(location)
     raise "No Lineman App at #{location}" unless Dir.exist? path
+    puts path
     Dir.chdir(path) do
       run_npm("install --production")
       run_npm("rebuild")
