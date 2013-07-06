@@ -44,11 +44,11 @@ class BuildLinemanApps
   def run_npm command, home = BUILD_DIR
     cmd = "HOME=#{home} #{BUILD_DIR}/bin/node #{BUILD_DIR}/bin/npm-cli.js #{command}"
     p cmd
-    run cmd
+    puts run cmd
   end
 
   def run_lineman(command, path)
-    run("#{path}/node_modules/.bin/lineman #{command}")
+    puts run("#{path}/node_modules/.bin/lineman #{command}")
   end
 
   def lineman_path(location)
