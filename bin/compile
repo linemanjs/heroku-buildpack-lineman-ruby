@@ -24,16 +24,13 @@ class BuildLinemanApps
 
   def build
     if File.exist?('lineman.json')
-      p ARGV
       puts "Reading lineman.json configuration"
       config = JSON.parse(File.read('lineman.json'))
       puts "Config is: #{config}"
       puts "Installing Node"
       node_curl = "curl http://heroku-buildpack-nodejs.s3.amazonaws.com/nodejs-0.10.12.tgz -s -o - | tar xzf -"
-      puts node_curl
       run(node_curl)
       npm_curl = "curl http://heroku-buildpack-nodejs.s3.amazonaws.com/npm-1.2.30.tgz -s -o - | tar xzf -"
-      puts npm_curl
       run(npm_curl)
       run_npm("--version")
       linemen(config)
@@ -42,18 +39,10 @@ class BuildLinemanApps
     end
   end
 
-  def run_npm command, home = BUILD_DIR
-    cmd = "HOME=#{home} #{NODE_PATH} #{BUILD_DIR}/bin/npm-cli.js #{command}"
+  def run_npm command
+    cmd = "#{NODE_PATH} #{BUILD_DIR}/bin/npm-cli.js #{command}"
     puts cmd
     puts run cmd
-  end
-
-  def run_lineman(command, path)
-    puts run("#{NODE_PATH} #{path}/node_modules/.bin/lineman #{command}")
-  end
-
-  def lineman_path(location, root = BUILD_DIR)
-    "#{root}/#{location}"
   end
 
   def linemen(config)
@@ -65,19 +54,43 @@ class BuildLinemanApps
     end
   end
 
-  #TODO cache npm installs for faster installs
+  def lineman_path(location, root = BUILD_DIR)
+    "#{root}/#{location}"
+  end
+
   def build_lineman(location)
     path = lineman_path(location)
     cached_modules_path = lineman_path(location, CACHE_DIR) + "/node_modules"
-    puts run("mkdir -p #{cached_modules_path}") unless Dir.exist? cached_modules_path
-    puts run ("rm -rf #{path}/node_modules")
+
+    retrieve_cached_modules(cached_modules_path, path)
+    npm_install_lineman(path)
+    cache_modules(cached_modules_path, path)
+  end
+
+  def retrieve_cached_modules cached_modules_path, path
+    create_cached_modules_dir(cached_modules_path) unless Dir.exist? cached_modules_path
+    puts run("rm -rf #{path}/node_modules")
     puts run("mv #{cached_modules_path} #{path}/node_modules")
+  end
+
+  def create_cached_modules_dir path
+    puts run("mkdir -p #{path}")
+  end
+
+  def npm_install_lineman path
     Dir.chdir(path) do
       run_npm("install --production")
       run_npm("rebuild")
       run_lineman("build", path)
-      puts run("mv #{path}/node_modules #{cached_modules_path}")
     end
+  end
+
+  def run_lineman(command, path)
+    puts run("#{NODE_PATH} #{path}/node_modules/.bin/lineman #{command}")
+  end
+
+  def cache_modules cached_modules_path, path
+    puts run("mv #{path}/node_modules #{cached_modules_path}")
   end
 
   def move_assets destination, origin
