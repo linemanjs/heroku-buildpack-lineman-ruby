@@ -59,7 +59,7 @@ class BuildLinemanApps
   def linemen(config)
     config.fetch("linemanApps").each do |app|
       build_lineman app.fetch("location")
-      link_assets app.fetch("installToPath")
+      link_assets app.fetch("installToPath"), app.fetch("location")
     end
   end
 
@@ -74,9 +74,11 @@ class BuildLinemanApps
     end
   end
 
-  def link_assets destination
+  def link_assets destination, origin
     raise "Asset destination expected but missing at #{destination}" unless Dir.exist? destination
-    puts run("ln -fs #{destination}/js/app.min.js /app/frontend/dist/js/app.min.js")
+    path = lineman_path(origin)
+    puts run("mv #{path}/dist/js/*.js #{destination}/js/")
+    puts run("mv #{path}/dist/css/*.css #{destination}/css/")
   end
 end
 
