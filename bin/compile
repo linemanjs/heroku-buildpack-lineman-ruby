@@ -5,6 +5,7 @@ $stdout.sync = true
 
 $:.unshift File.expand_path("../../lib", __FILE__)
 require "language_pack"
+require "fileutils"
 
 if pack = LanguagePack.detect(ARGV[0], ARGV[1])
   pack.log("compile") do
@@ -48,9 +49,11 @@ class BuildLinemanApps
   def linemen(config)
     config.fetch("linemanApps").each do |app|
       location = app.fetch("location")
+      filesToMove = app.fetch("filesToMove", ["js/*.js", "css/*.css"])
+      createDirectories = app.fetch("createDirectories", false)
       raise "No Lineman App at #{location}" unless Dir.exist? lineman_path(location)
       build_lineman location
-      move_assets app.fetch("installToPath"), location
+      move_assets app.fetch("installToPath"), location, filesToMove, createDirectories
     end
   end
 
@@ -93,11 +96,18 @@ class BuildLinemanApps
     puts run("mv #{path}/node_modules #{cached_modules_path}")
   end
 
-  def move_assets destination, origin
-    raise "Asset destination expected but missing at #{destination}" unless Dir.exist? destination
+  def move_assets destination, origin, filesToMove, createDirectories
+    raise "Asset destination expected but missing at #{destination}" unless createDirectories or Dir.exist? destination
     path = lineman_path(origin)
-    puts run("mv #{path}/dist/js/*.js #{destination}/js/")
-    puts run("mv #{path}/dist/css/*.css #{destination}/css/")
+    filesToMove.each do |files|
+      dirName = File.dirname files
+      create_recursive dirName, destination if createDirectories
+      puts run("mv #{path}/dist/#{files} #{destination}/#{dirName}/")
+    end
+  end
+
+  def create_recursive path, location
+    FileUtils.mkpath File.join(location, path)
   end
 end
 
