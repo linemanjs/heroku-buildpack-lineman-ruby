@@ -68,8 +68,8 @@ app_root/
 In addition to the above configuration, the following optional configuration is available
 
 ```
-"filesToMove": ["js/*.js", "css/*.css"]  # Which files to move into the target directory
-"createDirectories": false               # Create target directories if they don't exist
+"filesToDeploy": ["js/*.js", "css/*.css"]  # Which files to move into the target directory
+"overwriteExistingFiles": true             # Whether to overwrite files in the target directory with files from dist
 ```
 
 ### Future Times

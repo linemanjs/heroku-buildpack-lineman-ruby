@@ -49,11 +49,12 @@ class BuildLinemanApps
   def linemen(config)
     config.fetch("linemanApps").each do |app|
       location = app.fetch("location")
-      filesToMove = app.fetch("filesToMove", ["js/*.js", "css/*.css"])
-      createDirectories = app.fetch("createDirectories", false)
+      filesToDeploy = app.fetch("filesToDeploy", ["*"])
+      overwriteFiles= app.fetch("overwriteExistingFiles", true)
+
       raise "No Lineman App at #{location}" unless Dir.exist? lineman_path(location)
       build_lineman location
-      move_assets app.fetch("installToPath"), location, filesToMove, createDirectories
+      move_assets app.fetch("installToPath"), location, filesToDeploy, overwriteFiles
     end
   end
 
@@ -96,13 +97,14 @@ class BuildLinemanApps
     puts run("mv #{path}/node_modules #{cached_modules_path}")
   end
 
-  def move_assets destination, origin, filesToMove, createDirectories
-    raise "Asset destination expected but missing at #{destination}" unless createDirectories or Dir.exist? destination
+  def move_assets destination, origin, filesToDeploy, overwriteFiles
     path = lineman_path(origin)
-    filesToMove.each do |files|
+    filesToDeploy.each do |files|
       dirName = File.dirname files
-      create_recursive dirName, destination if createDirectories
-      puts run("mv #{path}/dist/#{files} #{destination}/#{dirName}/")
+      create_recursive dirName, destination
+      no_overwrite = overwriteFiles ? '' : '-n'
+
+      puts run("mv -f -v #{no_overwrite} #{path}/dist/#{files} #{destination}/#{dirName}/")
     end
   end
 
