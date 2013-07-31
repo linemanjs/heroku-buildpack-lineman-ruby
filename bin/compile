@@ -104,7 +104,7 @@ class BuildLinemanApps
       create_recursive dirName, destination
       no_overwrite = overwriteFiles ? '' : '-n'
 
-      puts run("mv -f -v #{no_overwrite} #{path}/dist/#{files} #{destination}/#{dirName}/")
+      puts run("mv -f #{no_overwrite} #{path}/dist/#{files} #{destination}/#{dirName}/")
     end
   end
 
