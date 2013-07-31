@@ -37,7 +37,7 @@ The apps are stored in directories off the root of the repo called "front_end1" 
 
 ### Gritty Details
 
-In the above configuration, this buildpack installs lineman, runs lineman build, and looks for the following
+In the default configuration, this buildpack installs lineman, runs lineman build, and looks for the following
 
 ```
 app_root/
@@ -62,6 +62,14 @@ app_root/
         app2/
             js/
             css/
+```
+
+### Additional configuration
+In addition to the above configuration, the following optional configuration is available
+
+```
+"filesToDeploy": ["js/*.js", "css/*.css"]  # Which files to move into the target directory
+"overwriteExistingFiles": true             # Whether to overwrite files in the target directory with files from dist
 ```
 
 ### Future Times
