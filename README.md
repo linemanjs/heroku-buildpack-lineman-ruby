@@ -7,7 +7,7 @@
 This is a [Heroku buildpack](http://devcenter.heroku.com/articles/buildpacks) for Ruby, Rack, and Rails apps that want to incorporate Lineman apps.
 
 ```
-$ heroku create --stack cedar --buildpack https://github.com/testdouble/heroku-buildpack-lineman-ruby.git
+$ heroku create --stack cedar --buildpack https://github.com/linemanjs/heroku-buildpack-lineman-ruby.git
 ```
 
 ## Configuration
